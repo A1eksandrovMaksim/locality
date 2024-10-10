@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: Localities
+  datasource:
+    generate-unique-name: false
+    url: jdbc:postgresql://localhost:5432/localities
+    username: epicprojects
+    password: epicprojects
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      default_schema: epicprojects
+    show-sql: true
