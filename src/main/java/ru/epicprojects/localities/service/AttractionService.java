@@ -10,6 +10,7 @@ import ru.epicprojects.localities.dao.AssistanceEntity;
 import ru.epicprojects.localities.dao.AttractionEntity;
 import ru.epicprojects.localities.dao.LocalityEntity;
 import ru.epicprojects.localities.dto.AttractionDTO;
+import ru.epicprojects.localities.exceptions.EntityIsAlreadyPresentException;
 import ru.epicprojects.localities.repositories.AssistanceRepository;
 import ru.epicprojects.localities.repositories.AttractionRepository;
 import ru.epicprojects.localities.repositories.LocalityRepository;
@@ -27,13 +28,22 @@ public class AttractionService {
     private final LocalityRepository localityRepo;
 
     @Transactional
-    public AttractionDTO addAttraction(AttractionDTO attractionDTO){
-        AttractionEntity attractionEntity = AttractionUtil.fromDTO(attractionDTO);
+    public AttractionDTO addAttraction(AttractionDTO attractionDTO)
+        throws EntityIsAlreadyPresentException{
 
-        LocalityEntity locality = localityRepo.findById(attractionDTO.getLocalityId())
+        if(attractionRepo.findById(attractionDTO.getId()).isPresent())
+            throw new EntityIsAlreadyPresentException(
+                    "Can't insert. Attraction with ID:"+attractionDTO.getId()+" already existing."
+            );
+
+        AttractionEntity attractionEntity = AttractionUtil.toEntity(attractionDTO);
+
+        LocalityEntity localityEntity = localityRepo.findById(attractionDTO.getLocalityId())
                 .orElseThrow(()->new EntityNotFoundException(
                         "Locality not found for ID: "+attractionDTO.getLocalityId()
                 ));
+        attractionEntity.setLocality(localityEntity);
+
         List<AssistanceEntity> assistances = new ArrayList<>();
         for (Long assistanceId : attractionDTO.getAssistanceIds()){
             AssistanceEntity assistance = assistanceRepo.findById(assistanceId)
@@ -44,24 +54,35 @@ public class AttractionService {
         }
         attractionEntity.setAssistances(assistances);
 
-        return AttractionUtil.fromEntity(attractionRepo.save(attractionEntity));
+        return AttractionUtil.toDTO(attractionRepo.save(attractionEntity));
     }
 
     @Transactional
     public Page<AttractionDTO> showAllAttractions(Pageable pageable) {
-        return attractionRepo.findAll(pageable).map(AttractionUtil::fromEntity);
+        return attractionRepo.findAll(pageable).map(AttractionUtil::toDTO);
     }
 
     @Transactional
     public List<AttractionDTO> showAllAttractionsInLocality(Long localityId){
         return localityRepo.findById(localityId)
                 .orElseThrow(()->new EntityNotFoundException(
-                    "Locality not found for ID: " + localityId
-                )).getAttractions().stream().map(AttractionUtil::fromEntity).toList();
+                    "Locality is not found for ID: " + localityId
+                )).getAttractions().stream().map(AttractionUtil::toDTO).toList();
     }
 
     @Transactional
-    public void deleteAttraction(AttractionDTO attractionDTO){
-        attractionRepo.delete(AttractionUtil.fromDTO(attractionDTO));
+    public AttractionDTO updateAttraction(AttractionDTO attractionDTO){
+        AttractionEntity attractionEntity = attractionRepo.findById(attractionDTO.getId())
+                .orElseThrow(()->new EntityNotFoundException(
+                        "Attraction entity is not found with ID: "+attractionDTO.getId()
+                ));
+        attractionEntity.setShortDescription(attractionDTO.getShortDescription());
+        return AttractionUtil.toDTO(attractionRepo.save(attractionEntity));
+
+    }
+
+    @Transactional
+    public void deleteAttraction(Long id){
+        attractionRepo.deleteById(id);
     }
 }

@@ -27,14 +27,14 @@ public class LocalityService {
 
         if(localityRepository.findById(localityDTO.getId()).isPresent())
             throw new EntityIsAlreadyPresentException(
-                    "Can't instert already existing Locality :" + localityDTO.getId()
+                    "Can't insert. Locality with ID:"+localityDTO.getId()+" already existing."
             );
 
-        LocalityEntity localityEntity = LocalityUtil.fromDTO(localityDTO);
+        LocalityEntity localityEntity = LocalityUtil.toEntity(localityDTO);
         List<AttractionEntity> attractions =
                 attractionRepository.findAllById(localityDTO.getAttractionIds());
         localityEntity.setAttractions(attractions);
-        return LocalityUtil.fromEntity(localityRepository.save(localityEntity));
+        return LocalityUtil.toDTO(localityRepository.save(localityEntity));
     }
 
     @Transactional
@@ -46,6 +46,6 @@ public class LocalityService {
         List<AttractionEntity> attractions =
                 attractionRepository.findAllById(localityDTO.getAttractionIds());
         localityEntity.setAttractions(attractions);
-        return LocalityUtil.fromEntity(localityRepository.save(localityEntity));
+        return LocalityUtil.toDTO(localityRepository.save(localityEntity));
     }
 }

@@ -5,7 +5,7 @@ import ru.epicprojects.localities.dto.LocalityDTO;
 
 public class LocalityUtil {
 
-    public static LocalityEntity fromDTO(LocalityDTO localityDTO){
+    public static LocalityEntity toEntity(LocalityDTO localityDTO){
         LocalityEntity localityEntity = new LocalityEntity();
         localityEntity.setLocality(localityDTO.getLocality());
         localityEntity.setId(localityDTO.getId());
@@ -13,7 +13,7 @@ public class LocalityUtil {
         return localityEntity;
     }
 
-    public static LocalityDTO fromEntity(LocalityEntity localityEntity){
+    public static LocalityDTO toDTO(LocalityEntity localityEntity){
         LocalityDTO localityDTO = new LocalityDTO(
                 localityEntity.getId(),
                 localityEntity.getLocality(),
