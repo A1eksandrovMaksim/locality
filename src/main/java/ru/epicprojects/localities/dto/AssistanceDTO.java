@@ -50,6 +50,6 @@ public class AssistanceDTO {
      * Перечисление, представляющее типы ассистентов.
      */
     public static enum Type{
-        GUIDE, AUTO_EXCURSION, NUTRITION
+        GUIDE, AUTO_EXCURSION, NUTRITION, ANIMATOR, OTHER
     }
 }

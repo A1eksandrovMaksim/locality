@@ -61,6 +61,6 @@ public class AttractionDTO {
      * Перечисление, представляющее типы аттракций.
      */
     public static enum Type{
-        CASTLE,PARK,MUSEUM, ARCHEOLOGICAL_SITE, RESERVE
+        CASTLE,PARK,MUSEUM, ARCHEOLOGICAL_SITE, RESERVE, OTHER
     }
 }
