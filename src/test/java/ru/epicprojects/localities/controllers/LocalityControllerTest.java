@@ -42,10 +42,8 @@ public class LocalityControllerTest {
     @Test
     void addLocality_ShouldReturnConflict_WhenLocalityAlreadyExists() throws Exception {
         LocalityDTO localityDTO = new LocalityDTO();
-        localityDTO.setId(1L);
         localityDTO.setRegion("Region");
         localityDTO.setLocality("Test Locality");
-        localityDTO.setAttractionIds(Arrays.asList(1L, 2L));
 
         when(localityService.addLocality(any(LocalityDTO.class)))
                 .thenThrow(new EntityIsAlreadyPresentException("Locality already exists."));
@@ -60,7 +58,6 @@ public class LocalityControllerTest {
     void addLocality_ShouldReturnCreatedLocality() throws Exception {
         // Создаем тестовый объект LocalityDTO
         LocalityDTO localityDTO = new LocalityDTO();
-        localityDTO.setId(1L);
         localityDTO.setLocality("Test Locality");
 
         // Настройка поведения мока

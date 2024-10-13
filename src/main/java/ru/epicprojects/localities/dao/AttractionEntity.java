@@ -28,17 +28,22 @@ public class AttractionEntity {
     private long id;
 
     /**
-     * Название достопримечательности
-     * Это поле обязательно для заполнения.
+     * Поле, которое объединяет в себе название достопримечательности и на какой локации она находится
+     * Альтернативный ключ
      */
-    @Column(nullable = false, unique = true)
-    private String name;
+    @EmbeddedId
+    private AttractionCompositeAK attractionCompositeAK;
+
+    @ManyToOne(optional = false)
+    @MapsId("localityId")
+    @JoinColumn(name = "locality_id", nullable = false)
+    private LocalityEntity locality;
 
     /**
-     * Дата основания(открытия) достопримечательности.
-     * Поле фиксируется как дата (без времени).
+     * Дата добавления достопримечательности в базу данных.
      */
     @Temporal(value = TemporalType.DATE)
+    @Column(updatable = false)
     private Date createdAt;
 
     /**
@@ -55,14 +60,6 @@ public class AttractionEntity {
     private AttractionDTO.Type type;
 
     /**
-     * Локация, к которой принадлежит достопримечательность.
-     * Обязательно для заполнения (отношение ManyToOne).
-     */
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "locality_id", nullable = false)
-    private LocalityEntity locality;
-
-    /**
      * Список услуг, связанных с достопримечательностью.
      * Отношение задано как ManyToMany через промежуточную таблицу.
      */
@@ -71,5 +68,10 @@ public class AttractionEntity {
             joinColumns = @JoinColumn(name="attraction_id"),
             inverseJoinColumns = @JoinColumn(name = "assistance_id"))
     private List<AssistanceEntity> assistances;
+
+    @PrePersist
+    public void prePersist(){
+        this.createdAt = new Date();
+    }
 
 }

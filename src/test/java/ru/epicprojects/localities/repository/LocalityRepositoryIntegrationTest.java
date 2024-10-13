@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.utility.DockerImageName;
 import ru.epicprojects.localities.dao.AttractionEntity;
+import ru.epicprojects.localities.dao.LocalityCompositeAK;
 import ru.epicprojects.localities.dao.LocalityEntity;
 import ru.epicprojects.localities.dto.AttractionDTO;
 import ru.epicprojects.localities.repositories.AttractionRepository;
@@ -56,25 +57,26 @@ public class LocalityRepositoryIntegrationTest {
     @Test
     void testSaveAndFindLocality() {
         LocalityEntity localityEntity = new LocalityEntity();
-        localityEntity.setLocality("Test Locality");
-        localityEntity.setRegion("Test Region");
+        localityEntity.setLocalityCompositeAK(new LocalityCompositeAK("Test Locality", "Test Region"));
 
         localityRepository.save(localityEntity);
 
         assertThat(localityEntity.getId()).isNotNull();  // Проверяем, что ID был сгенерирован
         assertThat(localityRepository.findById(localityEntity.getId())).isPresent();  // Проверяем существование локалитета
-        assertThat(localityRepository.findById(localityEntity.getId()).get().getLocality()).isEqualTo("Test Locality");
+        assertThat(localityRepository.findById(localityEntity.getId())
+                .get().getLocalityCompositeAK().getLocality()).isEqualTo("Test Locality");
     }
 
 
     @Test
     void testDeleteLocality() {
-        // Создаем и сохраняем локалитет
-        LocalityEntity locality = new LocalityEntity();
-        locality.setLocality("Locality to Delete");
-        locality.setRegion("Region to Delete");
-        locality = localityRepository.save(locality);
+        LocalityEntity localityEntity = new LocalityEntity();
+        localityEntity.setLocalityCompositeAK(new LocalityCompositeAK("Test Locality", "Test Region"));
 
+        localityRepository.save(localityEntity);
+        LocalityEntity locality = localityRepository.findByLocalityAndRegion(
+                localityEntity.getLocalityCompositeAK().getLocality(),
+                localityEntity.getLocalityCompositeAK().getRegion()).get();
         localityRepository.deleteById(locality.getId());
 
         assertThat(localityRepository.findById(locality.getId())).isNotPresent();

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.epicprojects.localities.dto.LocalityDTO;
 import ru.epicprojects.localities.exceptions.EntityIsAlreadyPresentException;
+import ru.epicprojects.localities.exceptions.InvalidFieldException;
 import ru.epicprojects.localities.service.LocalityService;
 
 /**
@@ -34,20 +35,8 @@ public class LocalityController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LocalityDTO addLocality(@RequestBody LocalityDTO localityDTO)
-            throws EntityIsAlreadyPresentException {
+            throws EntityIsAlreadyPresentException, InvalidFieldException {
         log.info("Adding locality: {}", localityDTO);
         return localityService.addLocality(localityDTO);
-    }
-
-    /**
-     * Обновить существующий локалитет.
-     *
-     * @param localityDTO Данные для обновленного локалитета.
-     * @return LocalityDTO Обновленный локалитет.
-     */
-    @PutMapping
-    public LocalityDTO updateLocality(LocalityDTO localityDTO){
-        log.info("Updating licality: {}", localityDTO);
-        return localityService.updateLocality(localityDTO);
     }
 }

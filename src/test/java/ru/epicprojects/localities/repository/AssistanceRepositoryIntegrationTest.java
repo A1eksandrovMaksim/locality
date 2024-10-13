@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
+import ru.epicprojects.localities.dao.LocalityCompositeAK;
 import ru.epicprojects.localities.dao.LocalityEntity;
 import ru.epicprojects.localities.repositories.AssistanceRepository;
 import ru.epicprojects.localities.repositories.LocalityRepository;
@@ -43,20 +44,22 @@ public class AssistanceRepositoryIntegrationTest {
     @Autowired
     private AssistanceRepository assistanceRepository;
 
-//    @Test
-//    void testSaveAndFindLocality() {
-//        LocalityEntity localityEntity = new LocalityEntity();
-//        localityEntity.setLocality("Test Locality");
-//        localityEntity.setRegion("Test Region");
-//
-//        localityRepository.save(localityEntity);
-//
-//        assertThat(localityEntity.getId()).isNotNull();  // Проверяем, что ID был сгенерирован
-//        assertThat(localityRepository.findById(localityEntity.getId())).isPresent();  // Проверяем существование локалитета
-//        assertThat(localityRepository.findById(localityEntity.getId()).get().getLocality()).isEqualTo("Test Locality");
-//    }
-//
-//
+    @Autowired
+    private LocalityRepository localityRepository;
+
+    @Test
+    void testSaveAndFindLocality() {
+        LocalityEntity localityEntity = new LocalityEntity();
+        localityEntity.setLocalityCompositeAK(new LocalityCompositeAK("Test Locality", "Test Region"));
+
+        localityRepository.save(localityEntity);
+
+        assertThat(localityEntity.getId()).isNotNull();  // Проверяем, что ID был сгенерирован
+        assertThat(localityRepository.findById(localityEntity.getId())).isPresent();  // Проверяем существование локалитета
+        assertThat(localityRepository.findById(localityEntity.getId()).get().getLocalityCompositeAK().getLocality()).isEqualTo("Test Locality");
+    }
+
+
 //    @Test
 //    void testDeleteLocality() {
 //        // Создаем и сохраняем локалитет

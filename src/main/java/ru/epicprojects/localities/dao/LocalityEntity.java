@@ -28,7 +28,7 @@ public class LocalityEntity {
      * Название локации и регион в котором она расположена.
      * Это поле обязательно для заполнения. (Альтернативный ключ)
      */
-    @Column(nullable = false)
+    @EmbeddedId
     private LocalityCompositeAK localityCompositeAK;
 
 

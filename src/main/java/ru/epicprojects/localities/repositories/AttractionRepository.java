@@ -7,6 +7,7 @@ import ru.epicprojects.localities.dao.AttractionEntity;
 import ru.epicprojects.localities.dto.AttractionDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Репозиторий для работы с достопримечательностями {@link AttractionEntity}.
@@ -22,5 +23,7 @@ import java.util.List;
 public interface AttractionRepository extends JpaRepository<AttractionEntity, Long> {
 
     List<AttractionEntity> findByType(AttractionDTO.Type type);
-    List<AttractionEntity> findByName(String name);
+    Optional<AttractionEntity> findByNameAndLocalityID(String name, Long localityID);
+    List<AttractionEntity> findAllByLocalityID(Long localityID);
+
 }

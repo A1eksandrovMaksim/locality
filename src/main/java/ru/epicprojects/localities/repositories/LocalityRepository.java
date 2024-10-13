@@ -19,6 +19,5 @@ import java.util.Optional;
  */
 @Repository
 public interface LocalityRepository extends JpaRepository<LocalityEntity, Long> {
-
-
+    Optional<LocalityEntity> findByLocalityAndRegion(String locality, String region);
 }

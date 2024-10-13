@@ -41,7 +41,7 @@ public class AssistanceEntity {
      * Исполнитель, предоставляющий услугу.
      * Это поле обязательно для заполнения.
      */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String executor;
 
     /**

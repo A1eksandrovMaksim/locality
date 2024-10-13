@@ -11,17 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.epicprojects.localities.dto.AttractionDTO;
 import ru.epicprojects.localities.dto.LocalityDTO;
 import ru.epicprojects.localities.exceptions.EntityIsAlreadyPresentException;
+import ru.epicprojects.localities.exceptions.InvalidFieldException;
 import ru.epicprojects.localities.service.AttractionService;
 
 import java.util.List;
 
 /**
- * Контроллер для управления аттракциями.
- *
- * Этот контроллер предоставляет API для выполнения операций
- * над аттракциями, включая получение всех аттракций,
- * добавление новой аттракции, обновление существующей,
- * получение аттракций по локалитету и удаление аттракции.
+ * Контроллер для управления достопримечательностями.
  */
 @Slf4j
 @RestController
@@ -53,22 +49,22 @@ public class AttractionController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AttractionDTO addAttraction(@RequestBody AttractionDTO attractionDTO)
-            throws EntityIsAlreadyPresentException {
+    public AttractionDTO addAttraction(@RequestBody AttractionDTO attractionDTO,
+            @RequestParam String locality,@RequestParam String region)
+            throws EntityIsAlreadyPresentException, InvalidFieldException {
         log.info("Adding attraction: {}", attractionDTO);
-        return attractionService.addAttraction(attractionDTO);
+        AttractionDTO responce = attractionService.addAttraction(attractionDTO, new LocalityDTO(locality, region, null));
+        return responce;
     }
 
     /**
      * Получить все аттракции в указанном локалитете.
-     *
-     * @param id Идентификатор локалитета.
-     * @return List<AttractionDTO> Список аттракций в локалитете.
      */
-    @GetMapping("/locality/{id}")
-    public List<AttractionDTO> getAllAttractionsInLocality(@PathVariable Long id){
-        log.info("Get attractions in locality with ID: {}", id);
-        return attractionService.showAllAttractionsInLocality(id);
+    @GetMapping("/in_locality")
+    public List<AttractionDTO> getAllAttractionsInLocality(
+            @RequestParam String locality,@RequestParam String region) throws InvalidFieldException {
+        log.info("Get attractions in locality with name:{}", locality);
+        return attractionService.showAllAttractionsInLocality(new LocalityDTO(locality,region,null));
     }
 
     /**
@@ -78,19 +74,23 @@ public class AttractionController {
      * @return AttractionDTO Обновленная аттракция.
      */
     @PutMapping
-    public AttractionDTO updateAttraction(@RequestBody AttractionDTO attractionDTO){
+    public AttractionDTO updateAttraction(@RequestBody AttractionDTO attractionDTO,
+        @RequestParam String locality,@RequestParam String region)
+            throws InvalidFieldException {
         log.info("Updating attraction: {}", attractionDTO);
-        return attractionService.updateAttraction(attractionDTO);
+        return attractionService.updateAttraction(attractionDTO, new LocalityDTO(locality, region, null));
     }
 
     /**
      * Удалить аттракцию по ее идентификатору.
-     *
-     * @param id Идентификатор аттракции для удаления.
      */
-    @DeleteMapping("/{id}")
-    public void deleteAttraction(@PathVariable Long id){
-        log.info("Deleting attraction with ID: {}", id);
-        attractionService.deleteAttraction(id);
+    @DeleteMapping("/{name}")
+    public void deleteAttraction(
+            @PathVariable String name,
+            @RequestParam String locality,
+            @RequestParam String region
+    ) throws InvalidFieldException {
+        log.info("Deleting attraction: {}", name);
+        attractionService.deleteAttraction(name, new LocalityDTO(locality,region,null));
     }
 }
